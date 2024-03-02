@@ -36,7 +36,8 @@ def execute_command(os_command: str):
 def click_until_success(button_id: str, wait_time: int, driver):
 	logging.debug('start try click of button with id: ' + str(button_id))
 
-	# element_to_be_clickable > visibility_of_element_located > presence_of_element_located
+	# with Selenium --> element_to_be_clickable > visibility_of_element_located > presence_of_element_located
+	# ">" meaning here "is a stronger check than"
 	try:
 		submit_button = WebDriverWait(driver, wait_time).until(EC.element_to_be_clickable((By.ID, button_id)))
 		try_click = True
@@ -55,7 +56,7 @@ def click_until_success(button_id: str, wait_time: int, driver):
 		logging.warning("couldn't find the button with id: " + str(button_id))
 	time.sleep(1)
 
-# display a pop up, stop the script until the pop up is closed
+# display a pop up, pause the script until the pop up is closed
 def display_pop_up(title, body):
 	root = tk.Tk()
 	root.attributes('-topmost',1) # set the pop up to be displayed at the foreground
@@ -96,8 +97,8 @@ def reconnect():
 	execute_command(CMD_2)
 
 # --- MAIN ---
-# load env variables
 try:
+	# load env variables
 	load_dotenv() 
 	CMD_1 = os.getenv('CMD_1', 'you_didnt_set_an_env_variableCMD_1') # command executed before connection
 	CMD_2 = os.getenv('CMD_2', 'you_didnt_set_an_env_variableCMD_2') # command executed after connection
