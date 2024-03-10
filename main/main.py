@@ -32,7 +32,7 @@ def execute_command(os_command: str):
 
 	logging.debug('command executed successfully: ' + os_command)
 
-# start clicking until success
+# start clicking button until success
 def click_until_success(button_id: str, wait_time: int, driver):
 	logging.debug('start try click of button with id: ' + str(button_id))
 
@@ -54,7 +54,54 @@ def click_until_success(button_id: str, wait_time: int, driver):
 	# TODO add specific check for button id not found instead of assuming every errors have this meaning
 	except:
 		logging.warning("couldn't find the button with id: " + str(button_id))
-	time.sleep(1)
+	time.sleep(0.2)
+
+
+# start clicking checkbox until success
+def click_until_success_checkbox(checkbox_id: str, wait_time: int, driver):
+	logging.debug('start try click of button with id: ' + str(checkbox_id))
+
+	# with Selenium --> element_to_be_clickable > visibility_of_element_located > presence_of_element_located
+	# ">" meaning here "is a stronger check than"
+	try:
+		check = WebDriverWait(driver, wait_time).until(EC.element_to_be_clickable((By.XPATH, "//label[@for='"+checkbox_id+"']")))
+		action = webdriver.ActionChains(driver)
+		try_click = True
+		while try_click:
+			time.sleep(random.uniform(CHECK_SPEED_MIN, CHECK_SPEED_MAX))
+			try:
+				logging.debug('try click!')
+				action.move_to_element_with_offset(check,-20,-20).click().perform()
+				try_click = False
+			except ElementClickInterceptedException:
+				logging.debug('try click: ElementClickInterceptedException!')
+			except:
+				logging.debug('try click: unknown error')
+	# TODO add specific check for button id not found instead of assuming every errors have this meaning
+	except:
+		logging.warning("couldn't find the button with id: " + str(checkbox_id))
+	time.sleep(0.2)
+
+# send until success
+def send_until_success(input_id: str, keys: str, wait_time: int, driver):
+	logging.debug('start try send keys to input with id: ' + str(input_id))
+
+	try:
+		submit_button = WebDriverWait(driver, wait_time).until(EC.visibility_of_element_located((By.ID, input_id)))
+		try_click = True
+		while try_click:
+			time.sleep(random.uniform(CHECK_SPEED_MIN, CHECK_SPEED_MAX))
+			try:
+				submit_button.send_keys(keys)
+				try_click = False
+			except ElementClickInterceptedException:
+				logging.debug('try click: ElementClickInterceptedException!')
+			except:
+				logging.debug('try click: unknown error')
+	# TODO add specific check for button id not found instead of assuming every errors have this meaning
+	except:
+		logging.warning("couldn't find the button with id: " + str(input_id))
+	time.sleep(0.2)
 
 # display a pop up, pause the script until the pop up is closed
 def display_pop_up(title, body):
@@ -75,8 +122,15 @@ def reconnect():
 	driver = webdriver.Chrome()
 	driver.get(PORTAL_URL)
 	driver.implicitly_wait(10)
+
+	# log on, if needed
+	send_until_success("uc-logonForm-login", ID, 5, driver) # main wait time for the page to load correctly
+	send_until_success("uc-logonForm-passwd", PASS, 0, driver)
+	click_until_success_checkbox("logonForm_logon_privatePolicy_accept", 0, driver)
+	click_until_success("logonForm_connect_button", 0, driver)
+
 	# if we're already connected, disconnect to reset connexion timer
-	click_until_success("feedbackForm_disconnect_button", 5, driver)
+	click_until_success("feedbackForm_disconnect_button", 0, driver)
 	# connect!
 	click_until_success("informativeWidget_connect_button", 10, driver)
 
@@ -102,6 +156,8 @@ try:
 	load_dotenv() 
 	CMD_1 = os.getenv('CMD_1', 'you_didnt_set_an_env_variableCMD_1') # command executed before connection
 	CMD_2 = os.getenv('CMD_2', 'you_didnt_set_an_env_variableCMD_2') # command executed after connection
+	ID = os.getenv('ID', 'you_didnt_set_an_env_variableID')
+	PASS = os.getenv('PASS',  'you_didnt_set_an_env_variablePASS')
 	PORTAL_URL = os.getenv('PORTAL_URL', 'you_didnt_set_an_env_variablePORTAL_URL')
 	LOGGING_FILE_PATH = os.getenv('LOGGING_FILE_PATH', 'you_didnt_set_an_env_variableLOGGING_FILE_PATH')
 
