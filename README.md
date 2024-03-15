@@ -10,6 +10,6 @@
 - `virtualenv .` create the virtual env
 - `source ./bin/activate` means 'execute the file passed as argument of source'. You should NOT make it an executable
 - `pip3 install -r requirements.txt` 
-- `cp .env.template .env` then fill your .env variables as instructed
+- `cd main; cp .env.template .env` then fill your .env variables as instructed
 ## usage
 - `cd main; python3 main.py`
