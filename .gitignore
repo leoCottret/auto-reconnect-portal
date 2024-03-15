@@ -1,0 +1,7 @@
+pyvenv.cfg
+lib
+bin
+.env
+auto_reconnect_portal.log
+**/chrome/
+**/chromedriver/
