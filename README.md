@@ -22,4 +22,4 @@
 - `npx @puppeteer/browsers install chromedriver@121`
 - `rm -rf node_modules; rm package.json package-lock.json`
 ## usage
-- `cd main; python3 main.py`
+- `./bin/python ./main/main.py`
